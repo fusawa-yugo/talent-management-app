@@ -2,7 +2,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import { Avatar, Box, Paper, Tab, Tabs, Typography } from "@mui/material";
 import { useCallback, useState } from "react";
 import type { Employee } from "../models/Employee";
-
+ああああ
 const tabPanelValue = {
   basicInfo: "基本情報",
   others: "その他",
