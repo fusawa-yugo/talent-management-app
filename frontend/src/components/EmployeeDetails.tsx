@@ -35,12 +35,12 @@ export type EmployeeDetailsProps = {
 export function EmployeeDetails(prop: EmployeeDetailsProps) {
   const [selectedTabValue, setSelectedTabValue] =
     useState<TabPanelValue>("basicInfo");
-  const [summary, setSummary] = useState<string>("概要を生成中...");
+  const [summary, setSummary] = useState<string>("サマリを生成中...");
   const employee = prop.employee;
 
   useEffect(() => {
     if (employee) {
-      setSummary("概要を生成中...");
+      setSummary("サマリを生成中...");
       fetch("/api/employee/summary", {
         method: "POST",
         headers: {
@@ -55,11 +55,11 @@ export function EmployeeDetails(prop: EmployeeDetailsProps) {
           return res.json();
         })
         .then((data) => {
-          setSummary(data.summary || "概要の取得に失敗しました。");
+          setSummary(data.summary || "サマリの取得に失敗しました。");
         })
         .catch((error) => {
           console.error("Error fetching summary:", error);
-          setSummary("概要の取得中にエラーが発生しました。");
+          setSummary("サマリの取得中にエラーが発生しました。");
         });
     }
   }, [employee]);
