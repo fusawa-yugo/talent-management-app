@@ -1,9 +1,9 @@
 "use client";
+import { isLeft } from "fp-ts/Either";
+import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import useSWR from "swr";
-import { isLeft } from "fp-ts/Either";
-import { Employee, EmployeeT } from "../models/Employee";
-import { useSearchParams } from "next/navigation";
+import { type Employee, EmployeeT } from "../models/Employee";
 import { EmployeeDetails } from "./EmployeeDetails";
 
 const employeeFetcher = async (url: string): Promise<Employee> => {
@@ -24,7 +24,7 @@ export function EmployeeDetailsContainer() {
 
   const { data, error, isLoading } = useSWR<Employee, Error>(
     `/api/employees/${id}`,
-    employeeFetcher
+    employeeFetcher,
   );
   useEffect(() => {
     if (error != null) {
