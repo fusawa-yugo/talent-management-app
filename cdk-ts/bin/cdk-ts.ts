@@ -1,17 +1,21 @@
 #!/usr/bin/env node
 import * as cdk from "aws-cdk-lib";
 import { AppStack } from "../lib/app-stack";
-import { PermanentResourcesStack } from "../lib/permanent-resources-stack";
 import { withPrefix } from "../lib/commons";
+import { PermanentResourcesStack } from "../lib/permanent-resources-stack";
 
 const app = new cdk.App();
 
-const permanentResourcesStack = new PermanentResourcesStack(app, 'PermanentResourcesStack', {
-  stackName: withPrefix('PermanentResourcesStack'),
-});
+const permanentResourcesStack = new PermanentResourcesStack(
+  app,
+  "PermanentResourcesStack",
+  {
+    stackName: withPrefix("PermanentResourcesStack"),
+  },
+);
 
 const appStack = new AppStack(app, "AppStack", {
-  stackName: withPrefix('ApplicationStack'),
+  stackName: withPrefix("ApplicationStack"),
 
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,

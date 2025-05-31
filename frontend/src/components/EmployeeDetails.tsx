@@ -1,7 +1,7 @@
 import PersonIcon from "@mui/icons-material/Person";
 import { Avatar, Box, Paper, Tab, Tabs, Typography } from "@mui/material";
-import { Employee } from "../models/Employee";
 import { useCallback, useState } from "react";
+import type { Employee } from "../models/Employee";
 
 const tabPanelValue = {
   basicInfo: "基本情報",
@@ -41,7 +41,7 @@ export function EmployeeDetails(prop: EmployeeDetailsProps) {
     (event: React.SyntheticEvent, newValue: TabPanelValue) => {
       setSelectedTabValue(newValue);
     },
-    []
+    [],
   );
 
   return (

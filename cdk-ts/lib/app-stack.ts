@@ -1,13 +1,13 @@
+import * as path from "node:path";
 import * as cdk from "aws-cdk-lib";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
+import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as s3 from "aws-cdk-lib/aws-s3";
-import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
-import { Construct } from "constructs";
-import * as path from "path";
-import { backendDynamoDBTableName } from "./permanent-resources-stack";
+import type { Construct } from "constructs";
 import { withPrefix } from "./commons";
+import { backendDynamoDBTableName } from "./permanent-resources-stack";
 
 export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -15,11 +15,19 @@ export class AppStack extends cdk.Stack {
 
     // Backend
     const backendFunctions = path.join(__dirname, "../../backend-ts");
-    const backendDB = dynamodb.Table.fromTableName(this, "BackendDynamoDB", backendDynamoDBTableName());
-    const backendFunctionLayer = new lambda.LayerVersion(this, "BackendFunctionLayer", {
-      layerVersionName: withPrefix("BackendFunctionLayer"),
-      code: lambda.Code.fromAsset(`${backendFunctions}/layers`),
-    });
+    const backendDB = dynamodb.Table.fromTableName(
+      this,
+      "BackendDynamoDB",
+      backendDynamoDBTableName(),
+    );
+    const backendFunctionLayer = new lambda.LayerVersion(
+      this,
+      "BackendFunctionLayer",
+      {
+        layerVersionName: withPrefix("BackendFunctionLayer"),
+        code: lambda.Code.fromAsset(`${backendFunctions}/layers`),
+      },
+    );
     const backendFunction = new lambda.Function(this, "BackendFunction", {
       functionName: withPrefix("BackendFunction"),
       runtime: lambda.Runtime.NODEJS_18_X,
@@ -55,14 +63,21 @@ export class AppStack extends cdk.Stack {
           origin: origins.FunctionUrlOrigin.withOriginAccessControl(
             backendFunction.addFunctionUrl({
               authType: lambda.FunctionUrlAuthType.AWS_IAM,
-            })),
-          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+            }),
+          ),
+          viewerProtocolPolicy:
+            cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
           allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
           cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
-          originRequestPolicy: new cloudfront.OriginRequestPolicy(this, "OriginRequestPolicy", {
-            originRequestPolicyName: withPrefix("OriginRequestPolicy"),
-            queryStringBehavior: cloudfront.OriginRequestQueryStringBehavior.all(),
-          }),
+          originRequestPolicy: new cloudfront.OriginRequestPolicy(
+            this,
+            "OriginRequestPolicy",
+            {
+              originRequestPolicyName: withPrefix("OriginRequestPolicy"),
+              queryStringBehavior:
+                cloudfront.OriginRequestQueryStringBehavior.all(),
+            },
+          ),
         },
       },
       errorResponses: [
