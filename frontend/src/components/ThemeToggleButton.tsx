@@ -1,7 +1,7 @@
 "use client";
 import { DarkMode, LightMode } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
-import { atom, useAtom } from "jotai";
+import { useAtom } from "jotai";
 import { ThemeAtom } from "./ThemeContextProvider";
 
 const ThemeToggleButton = () => {
