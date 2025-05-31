@@ -32,6 +32,14 @@ export class EmployeeDatabaseInMemory implements EmployeeDatabase {
     });
   }
 
+  partialMatchOnName(name : string, filterText : string) : boolean {
+    const lowerName : string = name.toLowerCase();
+    const lowerFilter : string = filterText.toLowerCase();
+    const lowerNameReplaced : string = lowerName.replace(/\s+/g, "");
+    const lowerFilterReplaced : string = lowerFilter.replace(/\s+/g, "");
+    return (lowerName.indexOf(lowerFilter) > -1) || (lowerNameReplaced.indexOf(lowerFilterReplaced) > -1);
+  }
+
   async getEmployee(id: string): Promise<Employee | undefined> {
     return this.employees.get(id);
   }
@@ -41,6 +49,6 @@ export class EmployeeDatabaseInMemory implements EmployeeDatabase {
     if (filterText === "") {
       return employees;
     }
-    return employees.filter((employee) => employee.name === filterText);
+    return employees.filter((employee) => this.partialMatchOnName(employee.name, filterText));
   }
 }
