@@ -8,6 +8,7 @@ import { Employee, EmployeeT } from "../models/Employee";
 
 export type EmployeesContainerProps = {
   filterText: string;
+  viewMode: "list" | "tile";
 };
 
 const EmployeesT = t.array(EmployeeT);
@@ -25,7 +26,10 @@ const employeesFetcher = async (url: string): Promise<Employee[]> => {
   return decoded.right;
 };
 
-export function EmployeeListContainer({ filterText }: EmployeesContainerProps) {
+export function EmployeeListContainer({
+  filterText,
+  viewMode,
+}: EmployeesContainerProps) {
   const encodedFilterText = encodeURIComponent(filterText);
   const { data, error, isLoading } = useSWR<Employee[], Error>(
     `/api/employees?filterText=${encodedFilterText}`,
@@ -37,6 +41,15 @@ export function EmployeeListContainer({ filterText }: EmployeesContainerProps) {
     }
   }, [error, filterText]);
   if (data != null) {
+    if (viewMode === "tile") {
+      return (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
+          {data.map((employee) => (
+            <EmployeeListItem employee={employee} key={employee.id} />
+          ))}
+        </div>
+      );
+    }
     return data.map((employee) => (
       <EmployeeListItem employee={employee} key={employee.id} />
     ));
