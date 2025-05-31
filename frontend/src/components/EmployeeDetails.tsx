@@ -1,9 +1,10 @@
 import PersonIcon from "@mui/icons-material/Person";
 import { Avatar, Box, Paper, Tab, Tabs, Typography } from "@mui/material";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Employee } from "../models/Employee";
 const tabPanelValue = {
   basicInfo: "基本情報",
+  summary: "サマリ",
   others: "その他",
 };
 
@@ -34,7 +35,34 @@ export type EmployeeDetailsProps = {
 export function EmployeeDetails(prop: EmployeeDetailsProps) {
   const [selectedTabValue, setSelectedTabValue] =
     useState<TabPanelValue>("basicInfo");
+  const [summary, setSummary] = useState<string>("概要を生成中...");
   const employee = prop.employee;
+
+  useEffect(() => {
+    if (employee) {
+      setSummary("概要を生成中...");
+      fetch("/api/employee/summary", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(employee),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then((data) => {
+          setSummary(data.summary || "概要の取得に失敗しました。");
+        })
+        .catch((error) => {
+          console.error("Error fetching summary:", error);
+          setSummary("概要の取得中にエラーが発生しました。");
+        });
+    }
+  }, [employee]);
 
   const handleTabValueChange = useCallback(
     (event: React.SyntheticEvent, newValue: TabPanelValue) => {
@@ -66,6 +94,7 @@ export function EmployeeDetails(prop: EmployeeDetailsProps) {
         <Box sx={{ borderBottom: 1, borderColor: "divider", width: "100%" }}>
           <Tabs value={selectedTabValue} onChange={handleTabValueChange}>
             <Tab label={tabPanelValue.basicInfo} value={"basicInfo"} />
+            <Tab label={tabPanelValue.summary} value={"summary"} />
             <Tab label={tabPanelValue.others} value={"others"} />
           </Tabs>
         </Box>
@@ -77,6 +106,13 @@ export function EmployeeDetails(prop: EmployeeDetailsProps) {
             <Typography>部署：{employee.department}</Typography>
             <Typography>役職：{employee.position}</Typography>
             <Typography>スキル：{employee.skills.join(", ")}</Typography>
+          </Box>
+        </TabContent>
+
+        <TabContent value={"summary"} selectedValue={selectedTabValue}>
+          <Box p={2} display="flex" flexDirection="column" gap={1}>
+            <Typography variant="h6">AIによるサマリ</Typography>
+            <Typography sx={{ whiteSpace: "pre-wrap" }}>{summary}</Typography>
           </Box>
         </TabContent>
 
