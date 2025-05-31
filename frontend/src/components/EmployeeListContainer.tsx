@@ -1,10 +1,10 @@
 "use client";
+import { isLeft } from "fp-ts/Either";
+import * as t from "io-ts";
 import { useEffect } from "react";
 import useSWR from "swr";
-import * as t from "io-ts";
-import { isLeft } from "fp-ts/Either";
+import { type Employee, EmployeeT } from "../models/Employee";
 import { EmployeeListItem } from "./EmployeeListItem";
-import { Employee, EmployeeT } from "../models/Employee";
 
 export type EmployeesContainerProps = {
   filterText: string;
@@ -29,13 +29,13 @@ export function EmployeeListContainer({ filterText }: EmployeesContainerProps) {
   const encodedFilterText = encodeURIComponent(filterText);
   const { data, error, isLoading } = useSWR<Employee[], Error>(
     `/api/employees?filterText=${encodedFilterText}`,
-    employeesFetcher
+    employeesFetcher,
   );
   useEffect(() => {
     if (error != null) {
-      console.error(`Failed to fetch employees filtered by filterText`, error);
+      console.error("Failed to fetch employees filtered by filterText", error);
     }
-  }, [error, filterText]);
+  }, [error]);
   if (data != null) {
     return data.map((employee) => (
       <EmployeeListItem employee={employee} key={employee.id} />
