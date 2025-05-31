@@ -6,9 +6,30 @@ export class EmployeeDatabaseInMemory implements EmployeeDatabase {
 
   constructor() {
     this.employees = new Map<string, Employee>();
-    this.employees.set("1", { id: "1", name: "Jane Doe", age: 22 });
-    this.employees.set("2", { id: "2", name: "John Smith", age: 28 });
-    this.employees.set("3", { id: "3", name: "山田 太郎", age: 27 });
+    this.employees.set("1", {
+      id: "1",
+      name: "Jane Doe",
+      age: 22,
+      department: "Engineering",
+      position: "Software Engineer",
+      skills: ["JavaScript", "TypeScript"],
+    });
+    this.employees.set("2", {
+      id: "2",
+      name: "John Smith",
+      age: 28,
+      department: "Marketing",
+      position: "Marketing Specialist",
+      skills: ["SEO", "Content Marketing"],
+    });
+    this.employees.set("3", {
+      id: "3",
+      name: "山田 太郎",
+      age: 27,
+      department: "Sales",
+      position: "Sales Representative",
+      skills: ["Negotiation", "Customer Relationship Management"],
+    });
   }
 
   async getEmployee(id: string): Promise<Employee | undefined> {

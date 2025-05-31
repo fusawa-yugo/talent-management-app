@@ -29,7 +29,10 @@ export function EmployeeListItem(prop: EmployeeListItemProps) {
               <PersonIcon sx={{ fontSize: 48 }} />
             </Avatar>
             <Box display="flex" flexDirection="column">
-              <Typography>{employee.name}</Typography>
+              <Typography fontWeight={"bold"}>{employee.name}</Typography>
+              <Typography>{employee.department}</Typography>
+              <Typography>{employee.position}</Typography>
+              <Typography>{employee.skills.join(", ")}</Typography>
             </Box>
           </Box>
         </CardContent>
