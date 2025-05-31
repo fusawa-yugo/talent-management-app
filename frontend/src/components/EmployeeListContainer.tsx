@@ -1,12 +1,12 @@
 "use client";
+import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import type { SelectChangeEvent } from "@mui/material";
 import { isLeft } from "fp-ts/Either";
 import * as t from "io-ts";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import { type Employee, EmployeeT } from "../models/Employee";
 import { EmployeeListItem } from "./EmployeeListItem";
-import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import type { SelectChangeEvent } from "@mui/material";
 
 export type EmployeesContainerProps = {
   filterText: string;
@@ -35,7 +35,7 @@ export function EmployeeListContainer({
   const encodedFilterText = encodeURIComponent(filterText);
   const { data, error, isLoading } = useSWR<Employee[], Error>(
     `/api/employees?filterText=${encodedFilterText}`,
-    employeesFetcher
+    employeesFetcher,
   );
 
   const [departmentFilter, setDepartmentFilter] = useState("");
@@ -50,18 +50,18 @@ export function EmployeeListContainer({
 
   const departments = useMemo(
     () => Array.from(new Set(data?.map((e) => e.department) || [])),
-    [data]
+    [data],
   );
   const positions = useMemo(
     () => Array.from(new Set(data?.map((e) => e.position) || [])),
-    [data]
+    [data],
   );
   const skills = useMemo(
     () =>
       Array.from(
-        new Set(data?.flatMap((e) => e.skills.map((s) => s.trim())) || [])
+        new Set(data?.flatMap((e) => e.skills.map((s) => s.trim())) || []),
       ),
-    [data]
+    [data],
   );
 
   const filteredData = data?.filter((employee) => {

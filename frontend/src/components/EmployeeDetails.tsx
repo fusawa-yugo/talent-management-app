@@ -40,7 +40,7 @@ export function EmployeeDetails(prop: EmployeeDetailsProps) {
     (event: React.SyntheticEvent, newValue: TabPanelValue) => {
       setSelectedTabValue(newValue);
     },
-    []
+    [],
   );
 
   return (
