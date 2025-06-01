@@ -68,4 +68,11 @@ export class EmployeeDatabaseInMemory implements EmployeeDatabase {
       this.partialMatchByEmployee(employee, filterText),
     );
   }
+
+  async registerEmployee(employee: Omit<Employee, "id">): Promise<Employee> {
+    const id = (this.employees.size + 1).toString();
+    const newEmployee: Employee = { ...employee, id };
+    this.employees.set(id, newEmployee);
+    return newEmployee;
+  }
 }
