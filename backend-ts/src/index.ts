@@ -80,7 +80,7 @@ app.get("/api/employees/:userId", async (req: Request, res: Response) => {
 const handleEmployeeSummary = (
   req: Request<ParamsDictionary, unknown, Employee>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   const employee = req.body;
 
