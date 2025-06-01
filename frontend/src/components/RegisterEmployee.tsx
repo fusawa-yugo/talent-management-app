@@ -1,7 +1,7 @@
 "use client";
 
 import { type Employee } from "@/models/Employee";
-import { Box, TextField, Button } from "@mui/material";
+import { Box, TextField, Button, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 
 type informationProps = Omit<Employee, "id">;
@@ -49,40 +49,53 @@ const RegisterEmployee = () => {
 
 	return (
 		<Box 
-			component="form" 
-			onSubmit={handleSubmit}
 			sx={{
 				display: "flex",
 				flexDirection: "column",
-				alignItems: "flex-start",
-				maxWidth:500,
-				gap: 2,
-			}}>
-			<Box sx = {{
-				display: "flex",
-				flexDirection: "row",
-				gap: 5,
-			}}>
-				<TextField label="名前" name = "name" required/>
-				<TextField label="名前(英語)" name = "name_en" required/>
-			</Box>
-			<TextField label="年齢" name = "age" type="number" required/>
-			<Box sx = {{
-				display: "flex",
-				flexDirection: "row",
-				gap: 5,
-			}}>
-				<TextField label="部署" name = "department" required/>
-				<TextField label="役職" name = "position" required/>
-			</Box>
-			<TextField label="スキル" name = "skills" helperText="カンマ区切りで入力" />
-			<Button 
-				type="submit" 
-				variant="contained" 
-				color="primary"
-				sx={{ alignSelf: "flex-end" }}>
+				alignItems: "center",
+		}}>
+			<Typography
+				variant="h4"
+				sx={{ marginBottom: 2 }}>
 				登録
-			</Button>
+			</Typography>
+			<Box 
+				component="form" 
+				onSubmit={handleSubmit}
+				sx={{
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "flex-start",
+					maxWidth: 500,
+					gap: 2,
+				}}>
+				<Box sx = {{
+					display: "flex",
+					flexDirection: "row",
+					gap: 5,
+				}}>
+					<TextField label="名前" name = "name" required/>
+					<TextField label="名前(英語)" name = "name_en" required/>
+				</Box>
+				<TextField label="年齢" name = "age" type="number" required/>
+				<Box sx = {{
+					display: "flex",
+					flexDirection: "row",
+					gap: 5,
+				}}>
+					<TextField label="部署" name = "department" required/>
+					<TextField label="役職" name = "position" required/>
+				</Box>
+				<TextField label="スキル" name = "skills" helperText="カンマ区切りで入力" />
+				<Button 
+					type="submit" 
+					variant="contained" 
+					color="primary"
+					sx={{ alignSelf: "flex-end" }}
+				>
+					登録
+				</Button>
+			</Box>
 		</Box>
 	);
 }

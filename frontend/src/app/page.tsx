@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <GlobalContainer>
       <Link href="/register-employee">
-        <Button variant="contained" color="primary">
+        <Button variant="contained">
           登録
         </Button>
       </Link>
