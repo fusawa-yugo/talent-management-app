@@ -37,6 +37,7 @@ export function EmployeeListContainer({ filterText }: EmployeesContainerProps) {
   const [departmentFilter, setDepartmentFilter] = useState("");
   const [positionFilter, setPositionFilter] = useState("");
   const [skillFilter, setSkillFilter] = useState("");
+  const [sortKey, setSortKey] = useState<keyof Employee>("id");
 
   useEffect(() => {
     if (error != null) {
@@ -59,16 +60,31 @@ export function EmployeeListContainer({ filterText }: EmployeesContainerProps) {
       ),
     [data],
   );
+  const sortKeys = useMemo(
+    () => Array.from(new Set(data?.flatMap((e) => Object.keys(e)) || [])),
+    [data],
+  );
 
-  const filteredData = data?.filter((employee) => {
-    const matchesDepartment =
-      departmentFilter === "" || employee.department === departmentFilter;
-    const matchesPosition =
-      positionFilter === "" || employee.position === positionFilter;
-    const matchesSkill =
-      skillFilter === "" || employee.skills.includes(skillFilter);
-    return matchesDepartment && matchesPosition && matchesSkill;
-  });
+  const filteredData = data
+    ?.filter((employee) => {
+      const matchesDepartment =
+        departmentFilter === "" || employee.department === departmentFilter;
+      const matchesPosition =
+        positionFilter === "" || employee.position === positionFilter;
+      const matchesSkill =
+        skillFilter === "" || employee.skills.includes(skillFilter);
+
+      return matchesDepartment && matchesPosition && matchesSkill;
+    })
+    .sort((a: Employee, b: Employee) => {
+      if (typeof a[sortKey] === "number" && typeof b[sortKey] === "number") {
+        return a[sortKey] - b[sortKey];
+      }
+      if (typeof a[sortKey] === "string" && typeof b[sortKey] === "string") {
+        return a[sortKey].localeCompare(b[sortKey]);
+      }
+      return a.id.localeCompare(b.id);
+    });
 
   if (isLoading) {
     return <p>Loading employees...</p>;
@@ -131,6 +147,23 @@ export function EmployeeListContainer({ filterText }: EmployeesContainerProps) {
             {skills.map((skill) => (
               <MenuItem key={skill} value={skill}>
                 {skill}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl sx={{ minWidth: 200 }} size="small">
+          <InputLabel>Sort</InputLabel>
+          <Select
+            value={sortKey}
+            label="SortKey"
+            onChange={(e: SelectChangeEvent) =>
+              setSortKey(e.target.value as keyof Employee)
+            }
+          >
+            {sortKeys.map((dep) => (
+              <MenuItem key={dep} value={dep}>
+                {dep}
               </MenuItem>
             ))}
           </Select>
