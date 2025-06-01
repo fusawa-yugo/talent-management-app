@@ -61,7 +61,10 @@ export function EmployeeListContainer({ filterText }: EmployeesContainerProps) {
     [data],
   );
   const sortKeys = useMemo(
-    () => Array.from(new Set(data?.flatMap((e) => Object.keys(e)) || [])),
+    () =>
+      Array.from(new Set(data?.flatMap((e) => Object.keys(e)) || [])).filter(
+        (key) => key !== "skills",
+      ),
     [data],
   );
 
@@ -77,11 +80,11 @@ export function EmployeeListContainer({ filterText }: EmployeesContainerProps) {
       return matchesDepartment && matchesPosition && matchesSkill;
     })
     .sort((a: Employee, b: Employee) => {
-      if (typeof a[sortKey] === "number" && typeof b[sortKey] === "number") {
-        return a[sortKey] - b[sortKey];
+      if (typeof a[sortKey] === "number") {
+        return a[sortKey] - (b[sortKey] as number);
       }
-      if (typeof a[sortKey] === "string" && typeof b[sortKey] === "string") {
-        return a[sortKey].localeCompare(b[sortKey]);
+      if (typeof a[sortKey] === "string") {
+        return a[sortKey].localeCompare(b[sortKey] as string);
       }
       return a.id.localeCompare(b.id);
     });
