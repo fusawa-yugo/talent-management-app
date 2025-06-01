@@ -118,9 +118,9 @@ app.post(
             : [],
         };
       });
-      employees.forEach(async (employee) => {
+      for (const employee of employees) {
         await database.registerEmployee(employee);
-      });
+      }
       res.status(201).send("CSVファイルから従業員情報を登録しました。");
       return;
     } catch (e) {
