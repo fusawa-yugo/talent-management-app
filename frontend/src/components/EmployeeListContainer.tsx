@@ -6,6 +6,7 @@ import * as t from "io-ts";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import { type Employee, EmployeeT } from "../models/Employee";
+import EmployeeDistributionCharts from "./EmployeeDistributionCharts";
 import SearchResultField from "./SearchResultField";
 
 export type EmployeesContainerProps = {
@@ -136,8 +137,8 @@ export function EmployeeListContainer({ filterText }: EmployeesContainerProps) {
           </Select>
         </FormControl>
       </Box>
-
       <SearchResultField employees={filteredData} />
+      <EmployeeDistributionCharts employees={filteredData} />
     </>
   );
 }
