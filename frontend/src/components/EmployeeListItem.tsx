@@ -18,6 +18,9 @@ export function EmployeeListItem(prop: EmployeeListItemProps) {
       <Card
         sx={{
           transition: "background-color 0.2s",
+          width: "100%",
+          whiteSpace: "nowrap",
+          overflowX: "auto",
           "&:hover": {
             backgroundColor: "#f0f0f0",
           },
