@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+// import dotenv from "dotenv";
 import express, {
   type Request,
   type Response,
@@ -60,6 +60,12 @@ app.get("/api/employees", async (req: Request, res: Response) => {
     console.error(`Failed to load the users filtered by ${filterText}.`, e);
     res.status(500).send();
   }
+});
+
+app.post("/api/register-employee", async (req: Request, res: Response) => {
+  const employee = req.body;
+  await database.registerEmployee(employee);
+  res.status(201).send();
 });
 
 app.get("/api/employees/:userId", async (req: Request, res: Response) => {

@@ -9,25 +9,31 @@ type Props = {
   departments: string[];
   positions: string[];
   skills: string[];
+  sortKeys: string[];
   departmentFilter: string;
   setDepartmentFilter: (v: string) => void;
   positionFilter: string;
   setPositionFilter: (v: string) => void;
   skillFilter: string;
   setSkillFilter: (v: string) => void;
+  sortKey: string;
+  setSortKey: (v: string) => void;
 };
 
 export function EmployeeListContainer({
-  employees,
+  employees = [],
   departments,
   positions,
   skills,
+  sortKeys,
   departmentFilter,
   setDepartmentFilter,
   positionFilter,
   setPositionFilter,
   skillFilter,
   setSkillFilter,
+  sortKey,
+  setSortKey,
 }: Props) {
   return (
     <>
@@ -90,7 +96,23 @@ export function EmployeeListContainer({
             ))}
           </Select>
         </FormControl>
+
+        <FormControl sx={{ minWidth: 200 }} size="small">
+          <InputLabel>Sort</InputLabel>
+          <Select
+            value={sortKey}
+            label="SortKey"
+            onChange={(e: SelectChangeEvent) => setSortKey(e.target.value)}
+          >
+            {sortKeys.map((key) => (
+              <MenuItem key={key} value={key}>
+                {key}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </Box>
+
       <SearchResultField employees={employees} />
     </>
   );
