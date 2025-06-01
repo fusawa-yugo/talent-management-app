@@ -1,19 +1,13 @@
 "use client";
-import { Button, Paper, TextField } from "@mui/material";
+import { Paper, TextField } from "@mui/material";
 import { useState } from "react";
 import { EmployeeListContainer } from "./EmployeeListContainer";
 
 export function SearchEmployees() {
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [UseAltDesign, setUseAltDesign] = useState(false);
-
-  const toggleDesign = () => {
-    setUseAltDesign((prev) => !prev);
-  };
 
   return (
     <>
-      <Button onClick={toggleDesign}>{UseAltDesign ? "list" : "tile"}</Button>
       <Paper
         sx={{
           display: "flex",
@@ -32,7 +26,6 @@ export function SearchEmployees() {
         <EmployeeListContainer
           key="employeesContainer"
           filterText={searchKeyword}
-          viewMode={UseAltDesign ? "tile" : "list"}
         />
       </Paper>
     </>
