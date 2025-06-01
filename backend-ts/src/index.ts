@@ -136,9 +136,7 @@ const handleEmployeeSummary = (
   //     console.error("Error in /api/employee/summary route:", error);
   //     next(error);
   //   });
-  res
-    .status(200)
-    .json({ summary: "This is a dummy summary from the backend." });
+  res.status(200).json({ summary: "ダミーサマリです。" });
 };
 
 app.post("/api/employee/summary", handleEmployeeSummary);

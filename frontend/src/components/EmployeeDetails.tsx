@@ -40,28 +40,27 @@ export function EmployeeDetails(prop: EmployeeDetailsProps) {
 
   useEffect(() => {
     if (employee) {
-      // setSummary("サマリを生成中...");
-      // fetch("/api/employee/summary", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(employee),
-      // })
-      //   .then((res) => {
-      //     if (!res.ok) {
-      //       throw new Error(`HTTP error! status: ${res.status}`);
-      //     }
-      //     return res.json();
-      //   })
-      //   .then((data) => {
-      //     setSummary(data.summary || "サマリの取得に失敗しました。");
-      //   })
-      //   .catch((error) => {
-      //     console.error("Error fetching summary:", error);
-      //     setSummary("サマリの取得中にエラーが発生しました。");
-      //   });
-      setSummary("ダミーサマリです。");
+      setSummary("サマリを生成中...");
+      fetch("/api/employee/summary", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(employee),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then((data) => {
+          setSummary(data.summary || "サマリの取得に失敗しました。");
+        })
+        .catch((error) => {
+          console.error("Error fetching summary:", error);
+          setSummary("サマリの取得中にエラーが発生しました。");
+        });
     }
   }, [employee]);
 
