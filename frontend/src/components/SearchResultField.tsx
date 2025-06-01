@@ -16,7 +16,7 @@ const SearchResultField: React.FC<SearchResultFieldProps> = ({
   employees = [],
 }) => {
   const [page, setPage] = useState(0);
-	const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [viewMode, setViewMode] = useState<"list" | "tile">("list");
 
   const handleChangePage = (event: unknown, newPage: number) => {
