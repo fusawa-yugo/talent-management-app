@@ -1,80 +1,34 @@
 "use client";
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
-import { isLeft } from "fp-ts/Either";
-import * as t from "io-ts";
-import { useEffect, useMemo, useState } from "react";
-import useSWR from "swr";
-import { type Employee, EmployeeT } from "../models/Employee";
-import EmployeeDistributionCharts from "./EmployeeDistributionCharts";
+import type { Employee } from "../models/Employee";
 import SearchResultField from "./SearchResultField";
 
-export type EmployeesContainerProps = {
-  filterText: string;
+type Props = {
+  employees: Employee[] | undefined;
+  departments: string[];
+  positions: string[];
+  skills: string[];
+  departmentFilter: string;
+  setDepartmentFilter: (v: string) => void;
+  positionFilter: string;
+  setPositionFilter: (v: string) => void;
+  skillFilter: string;
+  setSkillFilter: (v: string) => void;
 };
 
-const EmployeesT = t.array(EmployeeT);
-
-const employeesFetcher = async (url: string): Promise<Employee[]> => {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch employees at ${url}`);
-  }
-  const body = await response.json();
-  const decoded = EmployeesT.decode(body);
-  if (isLeft(decoded)) {
-    throw new Error(`Failed to decode employees ${JSON.stringify(body)}`);
-  }
-  return decoded.right;
-};
-
-export function EmployeeListContainer({ filterText }: EmployeesContainerProps) {
-  const encodedFilterText = encodeURIComponent(filterText);
-  const { data, error, isLoading } = useSWR<Employee[], Error>(
-    `/api/employees?filterText=${encodedFilterText}`,
-    employeesFetcher,
-  );
-
-  const [departmentFilter, setDepartmentFilter] = useState("");
-  const [positionFilter, setPositionFilter] = useState("");
-  const [skillFilter, setSkillFilter] = useState("");
-
-  useEffect(() => {
-    if (error != null) {
-      console.error("Failed to fetch employees filtered by filterText", error);
-    }
-  }, [error]);
-
-  const departments = useMemo(
-    () => Array.from(new Set(data?.map((e) => e.department) || [])),
-    [data],
-  );
-  const positions = useMemo(
-    () => Array.from(new Set(data?.map((e) => e.position) || [])),
-    [data],
-  );
-  const skills = useMemo(
-    () =>
-      Array.from(
-        new Set(data?.flatMap((e) => e.skills.map((s) => s.trim())) || []),
-      ),
-    [data],
-  );
-
-  const filteredData = data?.filter((employee) => {
-    const matchesDepartment =
-      departmentFilter === "" || employee.department === departmentFilter;
-    const matchesPosition =
-      positionFilter === "" || employee.position === positionFilter;
-    const matchesSkill =
-      skillFilter === "" || employee.skills.includes(skillFilter);
-    return matchesDepartment && matchesPosition && matchesSkill;
-  });
-
-  if (isLoading) {
-    return <p>Loading employees...</p>;
-  }
-
+export function EmployeeListContainer({
+  employees,
+  departments,
+  positions,
+  skills,
+  departmentFilter,
+  setDepartmentFilter,
+  positionFilter,
+  setPositionFilter,
+  skillFilter,
+  setSkillFilter,
+}: Props) {
   return (
     <>
       <Box
@@ -137,8 +91,7 @@ export function EmployeeListContainer({ filterText }: EmployeesContainerProps) {
           </Select>
         </FormControl>
       </Box>
-      <SearchResultField employees={filteredData} />
-      <EmployeeDistributionCharts employees={filteredData} />
+      <SearchResultField employees={employees} />
     </>
   );
 }
