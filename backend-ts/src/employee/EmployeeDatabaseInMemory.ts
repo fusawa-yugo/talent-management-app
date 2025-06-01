@@ -35,18 +35,24 @@ export class EmployeeDatabaseInMemory implements EmployeeDatabase {
     });
   }
 
-  // 氏名の部分一致
-  partialMatchOnName(employee : Employee, filterText : string) : boolean {
-    // すべて小文字に変換
-    const lowerName : string = employee.name.toLowerCase();
-    const lowerNameEn : string = employee.name_en.toLowerCase();
-    const lowerFilter : string = filterText.toLowerCase();
-    // スペースを除去
-    const lowerNameReplaced : string = lowerName.replace(/\s+/g, "");
-    const lowerNameEnReplaced : string = lowerNameEn.replace(/\s+/g, "");
-    const lowerFilterReplaced : string = lowerFilter.replace(/\s+/g, "");
-    return (lowerName.indexOf(lowerFilter) > -1) || (lowerNameReplaced.indexOf(lowerFilterReplaced) > -1)
-        || (lowerNameEn.indexOf(lowerFilter) > -1) || (lowerNameEnReplaced.indexOf(lowerFilterReplaced) > -1);
+  // 各名前で検索
+  partialMatchByName(name: string, filterText: string): boolean {
+    const lowerName: string = name.toLowerCase();
+    const lowerNameReplaced: string = lowerName.replace(/\s+/g, "");
+    const lowerFilter: string = filterText.toLowerCase();
+
+    return (
+      lowerName.indexOf(lowerFilter) > -1 ||
+      lowerNameReplaced.indexOf(lowerFilter) > -1
+    );
+  }
+
+  // 各個人で名前の部分一致検索
+  partialMatchByEmployee(employee: Employee, filterText: string): boolean {
+    return (
+      this.partialMatchByName(employee.name, filterText) ||
+      this.partialMatchByName(employee.name_en, filterText)
+    );
   }
 
   async getEmployee(id: string): Promise<Employee | undefined> {
@@ -58,6 +64,8 @@ export class EmployeeDatabaseInMemory implements EmployeeDatabase {
     if (filterText === "") {
       return employees;
     }
-    return employees.filter((employee) => this.partialMatchOnName(employee, filterText));
+    return employees.filter((employee) =>
+      this.partialMatchByEmployee(employee, filterText),
+    );
   }
 }
