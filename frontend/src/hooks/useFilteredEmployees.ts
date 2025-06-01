@@ -1,7 +1,7 @@
-import { isLeft } from "fp-ts/Either";
-import * as t from "io-ts";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
+import { isLeft } from "fp-ts/Either";
+import * as t from "io-ts";
 import { type Employee, EmployeeT } from "../models/Employee";
 
 const EmployeesT = t.array(EmployeeT);
@@ -19,16 +19,17 @@ const employeesFetcher = async (url: string): Promise<Employee[]> => {
   return decoded.right;
 };
 
-export function useFilteredEmployees(filterText: string) {
-  const encoded = encodeURIComponent(filterText);
+export const useFilteredEmployees = (filterText: string) => {
+  const encodedFilterText = encodeURIComponent(filterText);
   const { data, error, isLoading } = useSWR<Employee[], Error>(
-    `/api/employees?filterText=${encoded}`,
+    `/api/employees?filterText=${encodedFilterText}`,
     employeesFetcher
   );
 
   const [departmentFilter, setDepartmentFilter] = useState("");
   const [positionFilter, setPositionFilter] = useState("");
   const [skillFilter, setSkillFilter] = useState("");
+  const [sortKey, setSortKey] = useState<keyof Employee>("id");
 
   useEffect(() => {
     if (error != null) {
@@ -36,27 +37,16 @@ export function useFilteredEmployees(filterText: string) {
     }
   }, [error]);
 
-  const filtered = useMemo(() => {
-    if (!data) return [];
-    return data.filter((employee) => {
-      const matchesDepartment =
-        departmentFilter === "" || employee.department === departmentFilter;
-      const matchesPosition =
-        positionFilter === "" || employee.position === positionFilter;
-      const matchesSkill =
-        skillFilter === "" || employee.skills.includes(skillFilter);
-      return matchesDepartment && matchesPosition && matchesSkill;
-    });
-  }, [data, departmentFilter, positionFilter, skillFilter]);
-
   const departments = useMemo(
     () => Array.from(new Set(data?.map((e) => e.department) || [])),
     [data]
   );
+
   const positions = useMemo(
     () => Array.from(new Set(data?.map((e) => e.position) || [])),
     [data]
   );
+
   const skills = useMemo(
     () =>
       Array.from(
@@ -65,18 +55,54 @@ export function useFilteredEmployees(filterText: string) {
     [data]
   );
 
+  const sortKeys = useMemo(
+    () =>
+      Array.from(new Set(data?.flatMap((e) => Object.keys(e)) || [])).filter(
+        (key) => key !== "skills" // skills は配列なので除外
+      ),
+    [data]
+  );
+
+  const filteredData = useMemo(() => {
+    const result = data
+      ?.filter((employee) => {
+        const matchesDepartment =
+          departmentFilter === "" || employee.department === departmentFilter;
+        const matchesPosition =
+          positionFilter === "" || employee.position === positionFilter;
+        const matchesSkill =
+          skillFilter === "" || employee.skills.includes(skillFilter);
+        return matchesDepartment && matchesPosition && matchesSkill;
+      })
+      ?.sort((a, b) => {
+        const aValue = a[sortKey];
+        const bValue = b[sortKey];
+        if (typeof aValue === "number" && typeof bValue === "number") {
+          return aValue - bValue;
+        }
+        if (typeof aValue === "string" && typeof bValue === "string") {
+          return aValue.localeCompare(bValue);
+        }
+        return 0;
+      });
+
+    return result;
+  }, [data, departmentFilter, positionFilter, skillFilter, sortKey]);
+
   return {
-    filteredEmployees: filtered,
+    employees: filteredData,
     departments,
     positions,
     skills,
+    sortKeys,
     departmentFilter,
     setDepartmentFilter,
     positionFilter,
     setPositionFilter,
     skillFilter,
     setSkillFilter,
+    sortKey,
+    setSortKey,
     isLoading,
-    error,
   };
-}
+};

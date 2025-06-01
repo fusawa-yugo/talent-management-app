@@ -8,7 +8,7 @@ import EmployeeDistributionCharts from "./EmployeeDistributionCharts";
 export function SearchEmployees() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const {
-    filteredEmployees,
+    employees,
     departments,
     positions,
     skills,
@@ -38,7 +38,7 @@ export function SearchEmployees() {
           onChange={(e) => setSearchKeyword(e.target.value)}
         />
         <EmployeeListContainer
-          employees={filteredEmployees}
+          employees={employees}
           departments={departments}
           positions={positions}
           skills={skills}
@@ -48,6 +48,9 @@ export function SearchEmployees() {
           setPositionFilter={setPositionFilter}
           skillFilter={skillFilter}
           setSkillFilter={setSkillFilter}
+          sortKeys={["name", "age", "department", "position"]} // example sort keys
+          sortKey={"name"} // default sort key
+          setSortKey={() => {}} // placeholder function, replace with actual state logic if needed
         />
       </Paper>
       <Paper
@@ -60,7 +63,7 @@ export function SearchEmployees() {
           marginBottom: 10,
         }}
       >
-        <EmployeeDistributionCharts employees={filteredEmployees} />
+        <EmployeeDistributionCharts employees={employees} />
       </Paper>
     </>
   );
