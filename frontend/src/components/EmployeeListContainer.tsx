@@ -3,7 +3,7 @@ import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
 import { isLeft } from "fp-ts/Either";
 import * as t from "io-ts";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import { type Employee, EmployeeT } from "../models/Employee";
 import SearchResultField from "./SearchResultField";
