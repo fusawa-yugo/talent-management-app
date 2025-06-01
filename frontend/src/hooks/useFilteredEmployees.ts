@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
-import useSWR from "swr";
 import { isLeft } from "fp-ts/Either";
 import * as t from "io-ts";
+import { useEffect, useMemo, useState } from "react";
+import useSWR from "swr";
 import { type Employee, EmployeeT } from "../models/Employee";
 
 const EmployeesT = t.array(EmployeeT);
@@ -23,7 +23,7 @@ export const useFilteredEmployees = (filterText: string) => {
   const encodedFilterText = encodeURIComponent(filterText);
   const { data, error, isLoading } = useSWR<Employee[], Error>(
     `/api/employees?filterText=${encodedFilterText}`,
-    employeesFetcher
+    employeesFetcher,
   );
 
   const [departmentFilter, setDepartmentFilter] = useState("");
@@ -39,20 +39,20 @@ export const useFilteredEmployees = (filterText: string) => {
 
   const departments = useMemo(
     () => Array.from(new Set(data?.map((e) => e.department) || [])),
-    [data]
+    [data],
   );
 
   const positions = useMemo(
     () => Array.from(new Set(data?.map((e) => e.position) || [])),
-    [data]
+    [data],
   );
 
   const skills = useMemo(
     () =>
       Array.from(
-        new Set(data?.flatMap((e) => e.skills.map((s) => s.trim())) || [])
+        new Set(data?.flatMap((e) => e.skills.map((s) => s.trim())) || []),
       ),
-    [data]
+    [data],
   );
 
   const sortKeys = useMemo((): (keyof Employee)[] => {
@@ -60,7 +60,7 @@ export const useFilteredEmployees = (filterText: string) => {
       return [];
     }
     return (Object.keys(data[0]) as (keyof Employee)[]).filter(
-      (key) => key !== "skills"
+      (key) => key !== "skills",
     );
   }, [data]);
 
