@@ -33,4 +33,4 @@ jobs:
         run: |
           cd cdk-ts
           chmod +x ./deploy.bash
-          ./deploy.bash
+          ./deploy-cdk.bash
