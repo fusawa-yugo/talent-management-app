@@ -55,13 +55,14 @@ export const useFilteredEmployees = (filterText: string) => {
     [data]
   );
 
-  const sortKeys = useMemo(
-    () =>
-      Array.from(new Set(data?.flatMap((e) => Object.keys(e)) || [])).filter(
-        (key) => key !== "skills" // skills は配列なので除外
-      ),
-    [data]
-  );
+  const sortKeys = useMemo((): (keyof Employee)[] => {
+    if (!data || data.length === 0) {
+      return [];
+    }
+    return (Object.keys(data[0]) as (keyof Employee)[]).filter(
+      (key) => key !== "skills"
+    );
+  }, [data]);
 
   const filteredData = useMemo(() => {
     const result = data
@@ -77,6 +78,14 @@ export const useFilteredEmployees = (filterText: string) => {
       ?.sort((a, b) => {
         const aValue = a[sortKey];
         const bValue = b[sortKey];
+
+        if (aValue == null && bValue == null) return 0;
+        if (aValue == null) return 1;
+        if (bValue == null) return -1;
+
+        if (typeof aValue === "boolean" && typeof bValue === "boolean") {
+          return aValue === bValue ? 0 : aValue ? -1 : 1;
+        }
         if (typeof aValue === "number" && typeof bValue === "number") {
           return aValue - bValue;
         }

@@ -18,6 +18,9 @@ export function SearchEmployees() {
     setPositionFilter,
     skillFilter,
     setSkillFilter,
+    sortKey,
+    setSortKey,
+    sortKeys,
   } = useFilteredEmployees(searchKeyword);
 
   return (
@@ -48,9 +51,9 @@ export function SearchEmployees() {
           setPositionFilter={setPositionFilter}
           skillFilter={skillFilter}
           setSkillFilter={setSkillFilter}
-          sortKeys={["name", "age", "department", "position"]} // example sort keys
-          sortKey={"name"} // default sort key
-          setSortKey={() => {}} // placeholder function, replace with actual state logic if needed
+          sortKeys={sortKeys}
+          sortKey={sortKey}
+          setSortKey={setSortKey}
         />
       </Paper>
       <Paper

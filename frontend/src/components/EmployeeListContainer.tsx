@@ -9,15 +9,15 @@ type Props = {
   departments: string[];
   positions: string[];
   skills: string[];
-  sortKeys: string[];
+  sortKeys: (keyof Employee)[];
   departmentFilter: string;
   setDepartmentFilter: (v: string) => void;
   positionFilter: string;
   setPositionFilter: (v: string) => void;
   skillFilter: string;
   setSkillFilter: (v: string) => void;
-  sortKey: string;
-  setSortKey: (v: string) => void;
+  sortKey: keyof Employee;
+  setSortKey: (v: keyof Employee) => void;
 };
 
 export function EmployeeListContainer({
@@ -101,8 +101,10 @@ export function EmployeeListContainer({
           <InputLabel>Sort</InputLabel>
           <Select
             value={sortKey}
-            label="SortKey"
-            onChange={(e: SelectChangeEvent) => setSortKey(e.target.value)}
+            label="Sort"
+            onChange={(e: SelectChangeEvent) =>
+              setSortKey(e.target.value as keyof Employee)
+            }
           >
             {sortKeys.map((key) => (
               <MenuItem key={key} value={key}>
