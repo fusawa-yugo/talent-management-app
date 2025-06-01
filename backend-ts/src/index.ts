@@ -1,3 +1,4 @@
+import { parse } from "csv-parse/sync";
 // import dotenv from "dotenv";
 import express, {
   type Request,
@@ -5,11 +6,10 @@ import express, {
   type NextFunction,
 } from "express";
 import type { ParamsDictionary } from "express-serve-static-core";
+import multer from "multer";
 // import fetch from "node-fetch";
 import type { Employee } from "./employee/Employee";
 import { EmployeeDatabaseInMemory } from "./employee/EmployeeDatabaseInMemory";
-import { parse } from "csv-parse/sync";
-import multer from "multer";
 
 // dotenv.config();
 // const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -35,15 +35,15 @@ import multer from "multer";
 //   promptFeedback?: unknown;
 // }
 
-type CSVRecord = Omit<Employee, "id" |"skills" | "age"> & {
-  age: string; 
+type CSVRecord = Omit<Employee, "id" | "skills" | "age"> & {
+  age: string;
   skills?: string;
-}
+};
 
-const upload = multer()
+const upload = multer();
 
 interface MulterRequest extends Request {
-  file: Express.Multer.File; 
+  file: Express.Multer.File;
 }
 
 const app = express();
@@ -101,7 +101,7 @@ app.post(
         res.status(400).send("CSV data is empty.");
         return;
       }
-      const rawRecords: CSVRecord[]  = parse(csvData, {
+      const rawRecords: CSVRecord[] = parse(csvData, {
         columns: true,
         skip_empty_lines: true,
       });
@@ -110,14 +110,17 @@ app.post(
         return {
           name: record.name,
           name_en: record.name_en,
-          age: parseInt(record.age, 10),
+          age: Number.parseInt(record.age, 10),
           department: record.department,
           position: record.position,
-          skills: record.skills ? record.skills.split("/").map((s) => s.trim()) : [],
-        }})
+          skills: record.skills
+            ? record.skills.split("/").map((s) => s.trim())
+            : [],
+        };
+      });
       employees.forEach(async (employee) => {
         await database.registerEmployee(employee);
-      })
+      });
       res.status(201).send("CSVファイルから従業員情報を登録しました。");
       return;
     } catch (e) {
@@ -125,7 +128,7 @@ app.post(
       res.status(500).send("Failed to register employees from CSV.");
       return;
     }
-  }
+  },
 );
 
 app.get("/api/employees/:userId", async (req: Request, res: Response) => {
