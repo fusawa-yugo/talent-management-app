@@ -1,3 +1,4 @@
+import dotenv from "dotenv";
 import express, {
   type Request,
   type Response,
@@ -8,6 +9,17 @@ import type { ParamsDictionary } from "express-serve-static-core";
 import fetch from "node-fetch";
 import type { Employee } from "./employee/Employee";
 import { EmployeeDatabaseInMemory } from "./employee/EmployeeDatabaseInMemory";
+
+dotenv.config();
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_URL = `${process.env.GEMINI_API_URL}?key=${GEMINI_API_KEY}`;
+if (GEMINI_API_KEY && GEMINI_API_URL) {
+  console.log("Successfully loaded GEMINI_API_KEY and GEMINI_API_URL.");
+} else {
+  console.error(
+    "GEMINI_API_KEY or GEMINI_API_URL is not defined in environment variables.",
+  );
+}
 
 interface GeminiCandidate {
   content?: {
@@ -78,9 +90,6 @@ const handleEmployeeSummary = (
     return;
   }
 
-  const GEMINI_API_KEY = "wow";
-  const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
-
   const prompt = `以下の従業員情報を簡潔に要約してください:
 名前: ${employee.name}
 年齢: ${employee.age}歳
@@ -89,6 +98,14 @@ const handleEmployeeSummary = (
 スキル: ${employee.skills.join(", ")}
 
 要約結果:`;
+
+  if (!GEMINI_API_URL) {
+    console.error("GEMINI_API_URL is not defined.");
+    res.status(500).json({
+      message: "GEMINI_API_URL is not defined in environment variables.",
+    });
+    return;
+  }
 
   fetch(GEMINI_API_URL, {
     method: "POST",
