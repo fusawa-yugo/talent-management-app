@@ -15,7 +15,7 @@ const RegisterEmployee = () => {
 
     const skillsInput = formData.get("skills") as string | null;
     const skills = skillsInput
-      ? skillsInput.split(",").map((skill) => skill.trim())
+      ? skillsInput.split("/").map((skill) => skill.trim())
       : [];
 
     const employeeData: informationProps = {
@@ -45,6 +45,36 @@ const RegisterEmployee = () => {
         alert(`従業員情報の登録中にエラーが発生しました: ${error.message}`);
       });
   };
+
+	const handleCSVSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		const formData = new FormData(event.currentTarget);
+		const csvFileInput = formData.get("csvfile") as File | null;
+		if (!csvFileInput || csvFileInput.size === 0) {
+			alert("CSVファイルを選択してください。");
+			return;
+		}
+		
+		const uploadData = new FormData();
+		uploadData.append("csvfile", csvFileInput);
+
+		fetch("/api/register-csv", {
+			method: "POST",
+			body: uploadData,
+		})
+			.then((response) => {
+				if (response.ok) {
+					alert("CSVファイルが正常にアップロードされました。");
+					router.push("/");
+					return;
+				}
+			}).catch((error) => {
+				alert(`CSVファイルのアップロード中にエラーが発生しました: ${error.message}`);
+			}
+		);
+	}
+
+
 
   return (
     <Box
@@ -92,7 +122,7 @@ const RegisterEmployee = () => {
         <TextField
           label="スキル"
           name="skills"
-          helperText="カンマ区切りで入力"
+          helperText="スラッシュ区切りで入力"
         />
         <Button
           type="submit"
@@ -103,6 +133,30 @@ const RegisterEmployee = () => {
           登録
         </Button>
       </Box>
+
+			<Box
+				component="form"
+				onSubmit={handleCSVSubmit}
+				encType="multipart/form-data"
+				sx={{
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "flex-start",
+					maxWidth: 500,
+					gap: 2,
+					marginTop: 4,
+				}}
+			>
+				<input type="file" accept=".csv" name="csvfile"/>
+				<Button
+					type="submit"
+					variant="contained"
+					color="primary"
+					sx={{ alignSelf: "flex-end" }}
+				>
+					CSV登録
+				</Button>
+			</Box>
     </Box>
   );
 };

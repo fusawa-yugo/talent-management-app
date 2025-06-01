@@ -8,6 +8,8 @@ import type { ParamsDictionary } from "express-serve-static-core";
 // import fetch from "node-fetch";
 import type { Employee } from "./employee/Employee";
 import { EmployeeDatabaseInMemory } from "./employee/EmployeeDatabaseInMemory";
+import { parse } from "csv-parse/sync";
+import multer from "multer";
 
 // dotenv.config();
 // const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -32,6 +34,17 @@ import { EmployeeDatabaseInMemory } from "./employee/EmployeeDatabaseInMemory";
 //   candidates?: GeminiCandidate[];
 //   promptFeedback?: unknown;
 // }
+
+type CSVRecord = Omit<Employee, "id" |"skills" | "age"> & {
+  age: string; 
+  skills?: string;
+}
+
+const upload = multer()
+
+interface MulterRequest extends Request {
+  file: Express.Multer.File; 
+}
 
 const app = express();
 const port = process.env.PORT ?? 8080;
@@ -67,6 +80,53 @@ app.post("/api/register-employee", async (req: Request, res: Response) => {
   await database.registerEmployee(employee);
   res.status(201).send();
 });
+
+app.post(
+  "/api/register-csv",
+  upload.single("csvfile"), // フィールド名はフロントのFormDataのキーと合わせる
+  async (req: Request, res: Response) => {
+    const multerReq = req as MulterRequest;
+    if (!multerReq.file) {
+      res.status(400).send("CSVファイルがアップロードされていません。");
+      return;
+    }
+    try {
+      if (!multerReq.file) {
+        res.status(400).send("CSVファイルがアップロードされていません。");
+        return;
+      }
+      // ファイルのバッファを文字列に変換
+      const csvData = multerReq.file.buffer.toString("utf-8");
+      if (!csvData) {
+        res.status(400).send("CSV data is empty.");
+        return;
+      }
+      const rawRecords: CSVRecord[]  = parse(csvData, {
+        columns: true,
+        skip_empty_lines: true,
+      });
+
+      const employees: Omit<Employee, "id">[] = rawRecords.map((record) => {
+        return {
+          name: record.name,
+          name_en: record.name_en,
+          age: parseInt(record.age, 10),
+          department: record.department,
+          position: record.position,
+          skills: record.skills ? record.skills.split("/").map((s) => s.trim()) : [],
+        }})
+      employees.forEach(async (employee) => {
+        await database.registerEmployee(employee);
+      })
+      res.status(201).send("CSVファイルから従業員情報を登録しました。");
+      return;
+    } catch (e) {
+      console.error("Failed to register employees from CSV.", e);
+      res.status(500).send("Failed to register employees from CSV.");
+      return;
+    }
+  }
+);
 
 app.get("/api/employees/:userId", async (req: Request, res: Response) => {
   const userId = req.params.userId;
