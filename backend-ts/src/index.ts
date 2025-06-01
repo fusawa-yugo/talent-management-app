@@ -63,7 +63,7 @@ app.get("/api/employees", async (req: Request, res: Response) => {
 });
 
 app.post("/api/register-employee", async (req: Request, res: Response) => {
-  const employee = req.body ;
+  const employee = req.body;
   await database.registerEmployee(employee);
   res.status(201).send();
 });
