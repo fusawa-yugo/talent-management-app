@@ -3,14 +3,13 @@ import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
 import { isLeft } from "fp-ts/Either";
 import * as t from "io-ts";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import { type Employee, EmployeeT } from "../models/Employee";
-import { EmployeeListItem } from "./EmployeeListItem";
+import SearchResultField from "./SearchResultField";
 
 export type EmployeesContainerProps = {
   filterText: string;
-  viewMode: "list" | "tile";
 };
 
 const EmployeesT = t.array(EmployeeT);
@@ -28,10 +27,7 @@ const employeesFetcher = async (url: string): Promise<Employee[]> => {
   return decoded.right;
 };
 
-export function EmployeeListContainer({
-  filterText,
-  viewMode,
-}: EmployeesContainerProps) {
+export function EmployeeListContainer({ filterText }: EmployeesContainerProps) {
   const encodedFilterText = encodeURIComponent(filterText);
   const { data, error, isLoading } = useSWR<Employee[], Error>(
     `/api/employees?filterText=${encodedFilterText}`,
@@ -141,21 +137,7 @@ export function EmployeeListContainer({
         </FormControl>
       </Box>
 
-      {filteredData && filteredData.length > 0 ? (
-        viewMode === "tile" ? (
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
-            {filteredData.map((employee) => (
-              <EmployeeListItem employee={employee} key={employee.id} />
-            ))}
-          </Box>
-        ) : (
-          filteredData.map((employee) => (
-            <EmployeeListItem employee={employee} key={employee.id} />
-          ))
-        )
-      ) : (
-        <p>No employees match the filter criteria.</p>
-      )}
+      <SearchResultField employees={filteredData} />
     </>
   );
 }
